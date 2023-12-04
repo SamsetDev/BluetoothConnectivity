@@ -4,128 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/tv_paired_device"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Match Devices"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:textStyle="bold" />
 
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input1"
-        android:layout_margin="20dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/device_list_rv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="0.6"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/bluetooth_items" />
 
-        <com.tech.samsetdownloader.secureView.SecureInputView
-            android:id="@+id/etinput1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:hint="Enter the name 1 "
-            android:imeOptions="flagNoPersonalizedLearning"
-            android:privateImeOptions="disableToolbar=true"
-            android:maxLength="14"
-            android:importantForAutofill="no"
-            android:longClickable="false" />
+    <TextView
+        android:id="@+id/tv_new_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Devices"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:textStyle="bold" />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_margin="20dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/new_device_list_rv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="0.4"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/bluetooth_items" />
 
-        <com.tech.samsetdownloader.secureView.SecureInputView
-            android:id="@+id/etinput2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:hint="Enter the password 1 "
-            android:maxLength="14"
-            android:inputType="textPassword"
-            android:importantForAutofill="no"
-            android:longClickable="false" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_margin="20dp"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_scan"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.tech.samsetdownloader.secureView.SecureInputView
-            android:id="@+id/etinput22"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:hint="Enter the name 2 "
-            android:maxLength="14"
-            android:importantForAutofill="no"
-            android:longClickable="false" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_margin="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.tech.samsetdownloader.secureView.SecureInputView
-            android:id="@+id/etinput12"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:hint="Enter the name 3 "
-            android:maxLength="14"
-            android:importantForAutofill="no"
-            android:longClickable="false" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_margin="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.tech.samsetdownloader.secureView.SecureInputView
-            android:id="@+id/etinput3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:hint="Enter the password 3 "
-            android:maxLength="14"
-            android:inputType="textPassword"
-            android:importantForAutofill="no"
-            android:longClickable="false" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_margin="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.tech.samsetdownloader.secureView.SecureInputView
-            android:id="@+id/etinput4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:hint="Enter the password 4 "
-            android:maxLength="14"
-            android:inputType="textPassword"
-            android:importantForAutofill="no"
-            android:longClickable="false" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
+        android:layout_height="wrap_content"
+        android:text="Scan" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>
