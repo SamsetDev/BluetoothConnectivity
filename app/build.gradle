@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.tech.samsetdownloader'
+    namespace 'com.tech.bluetooth'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.tech.samsetdownloader"
+        applicationId "com.tech.bluetooth"
         minSdk 24
         targetSdk 33
         versionCode 1

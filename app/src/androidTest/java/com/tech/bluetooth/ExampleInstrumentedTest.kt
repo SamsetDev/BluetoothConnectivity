@@ -1,4 +1,4 @@
-package com.tech.samsetdownloader
+package com.tech.bluetooth
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -1,4 +1,4 @@
-package com.tech.samsetdownloader
+package com.tech.bluetooth
 
 import org.junit.Test
 

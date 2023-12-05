@@ -1,4 +1,4 @@
-package com.tech.samsetdownloader.utils
+package com.tech.bluetooth.utils
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -8,10 +8,10 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import com.tech.samsetdownloader.utils.CommonUtils.DEVICE_NAME
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_DEVICE_NAME
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_TOAST
-import com.tech.samsetdownloader.utils.CommonUtils.TOAST
+import com.tech.bluetooth.utils.CommonUtils.DEVICE_NAME
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_DEVICE_NAME
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_TOAST
+import com.tech.bluetooth.utils.CommonUtils.TOAST
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream

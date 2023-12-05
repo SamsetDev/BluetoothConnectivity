@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_connect"
+        android:title="Connect/Disconnect"
+        app:showAsAction="always">
+        <menu>
+
+            <item
+                android:id="@+id/action_menu1"
+                android:orderInCategory="1"
+                android:title="menu 1" />
+
+            <item
+                android:id="@+id/action_menu2"
+                android:orderInCategory="2"
+                android:title="menu 2" />
+
+        </menu>
+    </item>
+</menu>

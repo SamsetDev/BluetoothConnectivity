@@ -1,13 +1,13 @@
-package com.tech.samsetdownloader.adapter
+package com.tech.bluetooth.adapter
 
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.tech.samsetdownloader.utils.OnItemClickListener
-import com.tech.samsetdownloader.databinding.BluetoothItemsBinding
-import com.tech.samsetdownloader.modal.BleDevice
+import com.tech.bluetooth.utils.OnItemClickListener
+import com.tech.bluetooth.databinding.BluetoothItemsBinding
+import com.tech.bluetooth.modal.BleDevice
 
 class PairedAdapter(val context: Context) : RecyclerView.Adapter<PairedAdapter.BleViewHolder>() {
     private var devicesList = mutableListOf<BleDevice>()
@@ -32,7 +32,6 @@ class PairedAdapter(val context: Context) : RecyclerView.Adapter<PairedAdapter.B
     override fun getItemCount(): Int = devicesList.size
 
     override fun onBindViewHolder(holder: BleViewHolder, position: Int) {
-        Log.e("TAG","fetch device paired "+devicesList.size)
            holder.bind(devicesList.get(position),onItemClickListeners)
     }
 
@@ -41,9 +40,11 @@ class PairedAdapter(val context: Context) : RecyclerView.Adapter<PairedAdapter.B
         fun bind(data: BleDevice,itemclick: OnItemClickListener) {
            itemview.tvName.text=data.name
             itemview.tvName.setOnClickListener {
-                itemclick.onItemClicked(data.address.toString(),adapterPosition)
+                itemclick.onItemClicked(itemview.tvName,data.address.toString(),adapterPosition)
             }
-           // Log.e("TAG","  fetch device ads "+data.name)
+            itemview.ivOptions.setOnClickListener {
+                itemclick.onItemClicked(itemview.ivOptions,data.address.toString(),adapterPosition)
+            }
         }
 
     }

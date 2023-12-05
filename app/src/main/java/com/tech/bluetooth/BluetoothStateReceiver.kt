@@ -1,4 +1,4 @@
-package com.tech.samsetdownloader
+package com.tech.bluetooth
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
-import com.tech.samsetdownloader.ui.MyDeviceListActivity
+import com.tech.bluetooth.ui.MyDeviceListActivity
 
 class BluetoothStateReceiver : BroadcastReceiver() {
     private var isEnable:Boolean=false

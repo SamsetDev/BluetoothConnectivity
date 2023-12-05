@@ -1,4 +1,4 @@
-package com.tech.samsetdownloader.ui
+package com.tech.bluetooth.ui
 
 import android.Manifest
 import android.Manifest.permission.BLUETOOTH_CONNECT
@@ -18,30 +18,35 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.tech.samsetdownloader.utils.CommonUtils
-import com.tech.samsetdownloader.utils.CommonUtils.BLUETOOTH_PERMISSION_DESC
-import com.tech.samsetdownloader.utils.CommonUtils.DEVICE_NAME
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_CONNECTION_LOST
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_DEVICE_NAME
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_READ
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_STATE_CHANGE
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_TOAST
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_UNABLE_CONNECT
-import com.tech.samsetdownloader.utils.CommonUtils.MESSAGE_WRITE
-import com.tech.samsetdownloader.utils.CommonUtils.NON_PAIRED
-import com.tech.samsetdownloader.utils.CommonUtils.NO_NEW_DEVICE
-import com.tech.samsetdownloader.utils.CommonUtils.TOAST
-import com.tech.samsetdownloader.R
-import com.tech.samsetdownloader.adapter.NewDeviceAdapter
-import com.tech.samsetdownloader.adapter.PairedAdapter
-import com.tech.samsetdownloader.databinding.ActivityMainBinding
-import com.tech.samsetdownloader.modal.BleDevice
-import com.tech.samsetdownloader.utils.BluetoothServices
-import com.tech.samsetdownloader.utils.OnItemClickListener
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
+import com.tech.bluetooth.utils.CommonUtils
+import com.tech.bluetooth.utils.CommonUtils.BLUETOOTH_PERMISSION_DESC
+import com.tech.bluetooth.utils.CommonUtils.DEVICE_NAME
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_CONNECTION_LOST
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_DEVICE_NAME
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_READ
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_STATE_CHANGE
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_TOAST
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_UNABLE_CONNECT
+import com.tech.bluetooth.utils.CommonUtils.MESSAGE_WRITE
+import com.tech.bluetooth.utils.CommonUtils.NON_PAIRED
+import com.tech.bluetooth.utils.CommonUtils.NO_NEW_DEVICE
+import com.tech.bluetooth.utils.CommonUtils.TOAST
+import com.tech.bluetooth.R
+import com.tech.bluetooth.adapter.NewDeviceAdapter
+import com.tech.bluetooth.adapter.PairedAdapter
+import com.tech.bluetooth.databinding.ActivityMainBinding
+import com.tech.bluetooth.modal.BleDevice
+import com.tech.bluetooth.utils.BluetoothServices
+import com.tech.bluetooth.utils.OnItemClickListener
 
 
 class MyDeviceListActivity : AppCompatActivity() {
@@ -109,8 +114,12 @@ class MyDeviceListActivity : AppCompatActivity() {
         }
 
         pairedDeviceAdapter.setListeners(object : OnItemClickListener {
-            override fun onItemClicked(item: String, position: Int) {
-                itemClick(item)
+            override fun onItemClicked(view: View, item: String, position: Int) {
+                if (view.id==R.id.tv_name) {
+                    itemClick(item)
+                }else{
+                    showOptionsDialog()
+                }
             }
         })
 
@@ -119,11 +128,13 @@ class MyDeviceListActivity : AppCompatActivity() {
             adapter = newDeviceAdapter
         }
         newDeviceAdapter.setListeners(object : OnItemClickListener {
-            override fun onItemClicked(item: String, position: Int) {
-                Log.e("TAG"," You click on new devices ")
-                itemClick(item)
+            override fun onItemClicked(view: View, item: String, position: Int) {
+                if (view.id==R.id.tv_name) {
+                    itemClick(item)
+                }else{
+                    showOptionsDialog()
+                }
             }
-
         })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -131,6 +142,30 @@ class MyDeviceListActivity : AppCompatActivity() {
         } else {
             permissionLauncher.launch(arrayOf(Manifest.permission.BLUETOOTH,))
         }
+    }
+
+    private fun showOptionsDialog(){
+        val builder = AlertDialog.Builder(this@MyDeviceListActivity,R.style.TransparentDialog).create()
+        val view = layoutInflater.inflate(R.layout.dialog_options,null)
+        val  tvConnect = view.findViewById<AppCompatTextView>(R.id.tv_connect)
+        val  tvforget = view.findViewById<AppCompatTextView>(R.id.tv_forget)
+        val  tvsettings = view.findViewById<AppCompatTextView>(R.id.tv_settings)
+        builder.setView(view)
+        tvConnect.setOnClickListener {
+            builder.dismiss()
+
+        }
+        tvforget.setOnClickListener {
+            builder.dismiss()
+
+        }
+        tvsettings.setOnClickListener {
+            builder.dismiss()
+
+        }
+        builder.setCanceledOnTouchOutside(false)
+        builder.show()
+
     }
 
     private fun startgettingDevices(){
@@ -160,9 +195,7 @@ class MyDeviceListActivity : AppCompatActivity() {
                         pairedDeviceAdapter.addData(devicesList)
                     }
                 } else {
-                    CommonUtils.getPermission(
-                        this@MyDeviceListActivity,
-                        BLUETOOTH_SCAN,
+                    CommonUtils.getPermission(this@MyDeviceListActivity, BLUETOOTH_SCAN,
                         BLUETOOTH_PERMISSION_DESC
                     )
                 }
@@ -233,7 +266,6 @@ class MyDeviceListActivity : AppCompatActivity() {
                 }
             }
         }
-
         unregisterReceiver(mReceiver)
     }
 
@@ -275,8 +307,7 @@ class MyDeviceListActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.e("TAG", "  Permission on result " + requestCode + "  and " + grantResults[0])
         if (requestCode==1001 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
@@ -287,11 +318,8 @@ class MyDeviceListActivity : AppCompatActivity() {
                      Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                  )
              }
-        }else{
-
         }
     }
-
 
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -351,10 +379,23 @@ class MyDeviceListActivity : AppCompatActivity() {
     private fun connectDevice(address: String) {
         Log.e("TAG"," Connectionning...... ")
         val device: BluetoothDevice = mBtAdapter.getRemoteDevice(address)
-        bleService.connect(device)
-
-    }
-
+        //bleService.connect(device)
+        if (CommonUtils.checkPermission(this@MyDeviceListActivity,BLUETOOTH_SCAN)) {
+            try {
+                val bondState = device.bondState
+                when (bondState) {
+                    BluetoothDevice.BOND_NONE -> device.createBond()
+                    BluetoothDevice.BOND_BONDED -> {
+                        Log.e("TAG","Device is already paired.")}
+                    BluetoothDevice.BOND_BONDING -> {
+                        Log.e("TAG","Device is in the process of pairing.")}
+                }
+            } catch (e: Exception) {
+                Log.e("TAG","Pairing failed: ${e.message}")
+            }
+        }
+     }
+  }
 
     private val mHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
@@ -397,4 +438,3 @@ class MyDeviceListActivity : AppCompatActivity() {
     }
 
 
-}

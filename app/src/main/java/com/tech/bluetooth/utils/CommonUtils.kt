@@ -1,4 +1,4 @@
-package com.tech.samsetdownloader.utils
+package com.tech.bluetooth.utils
 
 import android.app.Activity
 import android.content.Context

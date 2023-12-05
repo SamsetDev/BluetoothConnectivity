@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">A SamsetProject</string>
+    <string name="app_name">Bluetooth-Sample</string>
     <string name="ble_scanning">Scanning Device&#8230;</string>
     <string name="none_paired">no match device</string>
     <string name="aeps_printer_scanning">Scanning</string>

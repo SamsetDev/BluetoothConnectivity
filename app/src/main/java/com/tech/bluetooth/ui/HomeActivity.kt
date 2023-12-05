@@ -1,4 +1,4 @@
-package com.tech.samsetdownloader.ui
+package com.tech.bluetooth.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -17,7 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.tech.samsetdownloader.databinding.ActivityHomeBinding
+import com.tech.bluetooth.databinding.ActivityHomeBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
