@@ -3,12 +3,14 @@ package com.tech.bluetooth.ui
 import android.Manifest
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
+import android.Manifest.permission.READ_PHONE_STATE
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -79,6 +81,9 @@ class MyDeviceListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val deviceList: MutableList<BluetoothDevice> = mutableListOf()
+
+
     private val enableBluetoothLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         Log.e("TAG"," You enable ")
         startgettingDevices()
@@ -105,7 +110,7 @@ class MyDeviceListActivity : AppCompatActivity() {
 
         binding.btnScan.setOnClickListener {
             doDiscovery()
-            it.visibility = View.GONE
+            //it.visibility = View.GONE
         }
 
         binding.deviceListRv.apply {
@@ -115,11 +120,7 @@ class MyDeviceListActivity : AppCompatActivity() {
 
         pairedDeviceAdapter.setListeners(object : OnItemClickListener {
             override fun onItemClicked(view: View, item: String, position: Int) {
-                if (view.id==R.id.tv_name) {
-                    itemClick(item)
-                }else{
-                    showOptionsDialog()
-                }
+                openOptionsDialog(item)
             }
         })
 
@@ -129,60 +130,68 @@ class MyDeviceListActivity : AppCompatActivity() {
         }
         newDeviceAdapter.setListeners(object : OnItemClickListener {
             override fun onItemClicked(view: View, item: String, position: Int) {
-                if (view.id==R.id.tv_name) {
-                    itemClick(item)
-                }else{
-                    showOptionsDialog()
-                }
+                openOptionsDialog(item)
             }
         })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissionLauncher.launch(arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT,))
         } else {
-            permissionLauncher.launch(arrayOf(Manifest.permission.BLUETOOTH,))
+            permissionLauncher.launch(arrayOf(Manifest.permission.BLUETOOTH))
         }
     }
 
-    private fun showOptionsDialog(){
-        val builder = AlertDialog.Builder(this@MyDeviceListActivity,R.style.TransparentDialog).create()
-        val view = layoutInflater.inflate(R.layout.dialog_options,null)
-        val  tvConnect = view.findViewById<AppCompatTextView>(R.id.tv_connect)
-        val  tvforget = view.findViewById<AppCompatTextView>(R.id.tv_forget)
-        val  tvsettings = view.findViewById<AppCompatTextView>(R.id.tv_settings)
-        builder.setView(view)
-        tvConnect.setOnClickListener {
-            builder.dismiss()
+    private fun openOptionsDialog(item: String) {
+        val builder = AlertDialog.Builder(this)
 
+        builder.setTitle("Bluetooth")
+            .setPositiveButton("Connect/Disconnect") { dialog, which ->
+                itemClick(item)
+            }
+            .setNegativeButton("Forget") { dialog, which ->
+                val device: BluetoothDevice = mBtAdapter.getRemoteDevice(item)
+                removeBond(device)
+            }
+            .setNeutralButton("Settings") { dialog, which ->
+                // call settings activity/fragments
+            }
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
+    }
+
+    fun removeBond(device: BluetoothDevice) {
+        try {
+            device::class.java.getMethod("removeBond").invoke(device)
+
+            val filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+            registerReceiver(mReceiver, filter)
+        } catch (e: Exception) {
+            Log.e("TAG", "Removing bond has been failed. ${e.message}")
         }
-        tvforget.setOnClickListener {
-            builder.dismiss()
-
-        }
-        tvsettings.setOnClickListener {
-            builder.dismiss()
-
-        }
-        builder.setCanceledOnTouchOutside(false)
-        builder.show()
-
     }
 
     private fun startgettingDevices(){
         bleService=BluetoothServices(this@MyDeviceListActivity,mHandler)
 
-        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+        val filter = IntentFilter()
+        filter.addAction(BluetoothDevice.ACTION_FOUND)
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
         registerReceiver(mReceiver, filter)
 
-        val filterFinished = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-        registerReceiver(mReceiver, filterFinished)
+       // val filterFinished = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+        //registerReceiver(mReceiver, filterFinished)
+            getPairedDeviceList()
 
+    }
+    private fun getPairedDeviceList(){
         var devicesList = mutableListOf<BleDevice>()
+        devicesList.clear()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (CommonUtils.checkPermission(this, BLUETOOTH_CONNECT)) {
                 if (CommonUtils.checkPermission(this, BLUETOOTH_SCAN)) {
                     val pairedDevices: Set<BluetoothDevice> = mBtAdapter.bondedDevices
                     if (pairedDevices.isNotEmpty()) {
+                        Log.e("TAG"," paired device ")
                         binding.tvPairedDevice.visibility = View.VISIBLE
                         for (device in pairedDevices) {
                             var data = BleDevice(device.name, device.address)
@@ -205,8 +214,10 @@ class MyDeviceListActivity : AppCompatActivity() {
         } else {
             val pairedDevices: Set<BluetoothDevice> = mBtAdapter.bondedDevices
             if (pairedDevices.isNotEmpty()) {
+
                 binding.tvPairedDevice.visibility = View.VISIBLE
                 for (device in pairedDevices) {
+                    Log.e("TAG"," else paired device "+device.name)
                     var data = BleDevice(device.name, device.address)
                     devicesList.add(data)
                 }
@@ -223,13 +234,21 @@ class MyDeviceListActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (CommonUtils.checkPermission(this@MyDeviceListActivity, BLUETOOTH_CONNECT)) {
                 if (CommonUtils.checkPermission(this@MyDeviceListActivity, BLUETOOTH_SCAN)) {
-                    mBtAdapter.cancelDiscovery()
-                    if (address != NON_PAIRED && address != NO_NEW_DEVICE) {
-                        val intent = Intent()
-                        intent.putExtra(EXTRA_DEVICE_ADDRESS, address)
-                        //setResult(Activity.RESULT_OK, intent)
-                        //finish()
-                        connectDevice(address)
+                    if (CommonUtils.checkPermission(this@MyDeviceListActivity, READ_PHONE_STATE)) {
+                        mBtAdapter.cancelDiscovery()
+                        if (address != NON_PAIRED && address != NO_NEW_DEVICE) {
+                            val intent = Intent()
+                            intent.putExtra(EXTRA_DEVICE_ADDRESS, address)
+                            //setResult(Activity.RESULT_OK, intent)
+                            //finish()
+                            connectDevice(address)
+                        }
+                    }else{
+                        CommonUtils.getPermission(
+                            this@MyDeviceListActivity,
+                            READ_PHONE_STATE,
+                            BLUETOOTH_PERMISSION_DESC
+                        )
                     }
                 } else {
                     CommonUtils.getPermission(
@@ -310,7 +329,7 @@ class MyDeviceListActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.e("TAG", "  Permission on result " + requestCode + "  and " + grantResults[0])
-        if (requestCode==1001 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+        if (grantResults[0]==PackageManager.PERMISSION_GRANTED){
              if (mBtAdapter.isEnabled){
                  startgettingDevices()
              }else{
@@ -328,21 +347,37 @@ class MyDeviceListActivity : AppCompatActivity() {
                 if (CommonUtils.checkPermission(this@MyDeviceListActivity, BLUETOOTH_CONNECT)) {
                     // When discovery finds a device
                     if (BluetoothDevice.ACTION_FOUND == action) {
-                        // Get the BluetoothDevice object from the Intent
-                        val device: BluetoothDevice? =
+                        val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                        } else {
                             intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                        }
                         // If it's already paired, skip it, because it's been listed already
                         if (device?.bondState != BluetoothDevice.BOND_BONDED) {
                             var data = BleDevice(device?.name, device?.address)
                             newDeviceAdapter.addData(data)
                         }
+
                         // When discovery is finished, change the Activity title
                     } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED == action) {
-                        setProgressBarIndeterminateVisibility(false)
                         setTitle("Select Device")
                         if (newDeviceAdapter.itemCount == 0) {
                             val data = BleDevice(NON_PAIRED, NON_PAIRED)
                             newDeviceAdapter.addData(data)
+                        }
+                    }else if ( BluetoothDevice.ACTION_BOND_STATE_CHANGED == action) {
+                        val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                        } else {
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                        }
+                        val bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)
+
+                        if (device != null && bondState == BluetoothDevice.BOND_NONE) {
+                            var data = BleDevice(device?.name, device?.address)
+                            Log.e("tag"," if device data "+data.name)
+                            // The device is unpaired, update your device list here
+                            //updateDeviceList()
                         }
                     }
 
@@ -355,23 +390,45 @@ class MyDeviceListActivity : AppCompatActivity() {
                 }
             } else {
                 if (BluetoothDevice.ACTION_FOUND == action) {
-                    // Get the BluetoothDevice object from the Intent
-                    val device: BluetoothDevice? =
+                    val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                    } else {
                         intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    // If it's already paired, skip it, because it's been listed already
+                    }
                     if (device?.bondState != BluetoothDevice.BOND_BONDED) {
                         var data = BleDevice(device?.name, device?.address)
                         newDeviceAdapter.addData(data)
                     }
                     // When discovery is finished, change the Activity title
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED == action) {
-                    setProgressBarIndeterminateVisibility(false)
                     setTitle("Select_device")
                     if (newDeviceAdapter.itemCount == 0) {
                         val data = BleDevice(NON_PAIRED, NON_PAIRED)
                         newDeviceAdapter.addData(data)
                     }
+                } else if ( BluetoothDevice.ACTION_BOND_STATE_CHANGED == action) {
+                    val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                    } else {
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    }
+                    val bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)
+
+                    if (device != null && bondState == BluetoothDevice.BOND_NONE) {
+                        var data = BleDevice(device?.name, device?.address)
+                        Log.e("tag"," else device data "+data.name)
+                        pairedDeviceAdapter.remove(data)
+                        // The device is unpaired, update your device list here
+                        //updateDeviceList()
+                    }else if (device != null && device?.bondState != BluetoothDevice.BOND_BONDED) {
+                        var data = BleDevice(device?.name, device?.address)
+                        Log.e("tag"," else device data "+data.name)
+                        pairedDeviceAdapter.remove(data)
+                        // The device is unpaired, update your device list here
+                        //updateDeviceList()
+                    }
                 }
+
             }
         }
     }
@@ -380,20 +437,30 @@ class MyDeviceListActivity : AppCompatActivity() {
         Log.e("TAG"," Connectionning...... ")
         val device: BluetoothDevice = mBtAdapter.getRemoteDevice(address)
         //bleService.connect(device)
-        if (CommonUtils.checkPermission(this@MyDeviceListActivity,BLUETOOTH_SCAN)) {
             try {
                 val bondState = device.bondState
+                Log.e("TAG","Device is state "+bondState)
                 when (bondState) {
-                    BluetoothDevice.BOND_NONE -> device.createBond()
+                    BluetoothDevice.BOND_NONE -> {
+                        Log.e("TAG","Device is state boded "+bondState)
+                       try {
+                           device.createBond()
+                           var data = BleDevice(device?.name, device?.address)
+                           pairedDeviceAdapter.update(data)
+                           Log.e("TAG","Device is bonded "+data.name)
+                       }catch (e:Exception){
+                           e.printStackTrace()
+                       }
+                    }
                     BluetoothDevice.BOND_BONDED -> {
                         Log.e("TAG","Device is already paired.")}
                     BluetoothDevice.BOND_BONDING -> {
-                        Log.e("TAG","Device is in the process of pairing.")}
+
+                        Log.e("TAG","Device is in the process of pairing. ")}
                 }
             } catch (e: Exception) {
                 Log.e("TAG","Pairing failed: ${e.message}")
             }
-        }
      }
   }
 

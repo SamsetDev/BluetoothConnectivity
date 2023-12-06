@@ -19,6 +19,16 @@ class PairedAdapter(val context: Context) : RecyclerView.Adapter<PairedAdapter.B
         notifyDataSetChanged()
     }
 
+    public fun update(data: BleDevice) {
+        devicesList.add(0,data)
+        notifyDataSetChanged()
+    }
+
+    public fun remove(data: BleDevice) {
+        devicesList.remove(data)
+        notifyDataSetChanged()
+    }
+
     public fun setListeners(listeners: OnItemClickListener) {
         onItemClickListeners = listeners
     }
@@ -42,9 +52,7 @@ class PairedAdapter(val context: Context) : RecyclerView.Adapter<PairedAdapter.B
             itemview.tvName.setOnClickListener {
                 itemclick.onItemClicked(itemview.tvName,data.address.toString(),adapterPosition)
             }
-            itemview.ivOptions.setOnClickListener {
-                itemclick.onItemClicked(itemview.ivOptions,data.address.toString(),adapterPosition)
-            }
+
         }
 
     }

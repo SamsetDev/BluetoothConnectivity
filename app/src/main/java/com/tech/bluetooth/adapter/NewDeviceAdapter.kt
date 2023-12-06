@@ -14,7 +14,6 @@ class NewDeviceAdapter(val context: Context) : RecyclerView.Adapter<NewDeviceAda
     private lateinit var onItemClickListeners: OnItemClickListener
 
     public fun addData(data: BleDevice) {
-        Log.e("TAG","  fetch new device adapter "+data.name)
         devicesList.clear()
         devicesList.add(data)
         notifyDataSetChanged()
@@ -38,7 +37,6 @@ class NewDeviceAdapter(val context: Context) : RecyclerView.Adapter<NewDeviceAda
     override fun getItemCount(): Int = devicesList.size
 
     override fun onBindViewHolder(holder: BleViewHolder, position: Int) {
-        Log.e("TAG","  fetch new device fff "+devicesList.size)
            holder.bind(devicesList.get(position),onItemClickListeners)
     }
 
@@ -48,9 +46,6 @@ class NewDeviceAdapter(val context: Context) : RecyclerView.Adapter<NewDeviceAda
            itemview.tvName.text=data.name
             itemview.tvName.setOnClickListener {
                 itemclick.onItemClicked(itemview.tvName,data.address.toString(),adapterPosition)
-            }
-            itemview.ivOptions.setOnClickListener {
-                itemclick.onItemClicked(itemview.ivOptions,data.address.toString(),adapterPosition)
             }
 
         }

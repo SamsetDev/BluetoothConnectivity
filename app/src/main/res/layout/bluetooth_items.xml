@@ -22,20 +22,12 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_name"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.9"
                 android:padding="8dp"
                 android:text="--"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_14sp" />
-
-            <ImageView
-                android:id="@+id/iv_options"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_more" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
