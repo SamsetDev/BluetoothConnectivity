@@ -43,7 +43,6 @@ import com.tech.bluetooth.adapter.PairedAdapter
 import com.tech.bluetooth.databinding.ActivityMainBinding
 import com.tech.bluetooth.modal.BleDevice
 import com.tech.bluetooth.utils.BluetoothServices
-import com.tech.bluetooth.utils.BluetoothUtils
 import com.tech.bluetooth.utils.OnItemClickListener
 
 
@@ -103,12 +102,6 @@ class MyDeviceListActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         setResult(Activity.RESULT_CANCELED)
-
-
-        BluetoothUtils.init(this)
-        var list=BluetoothUtils.getPairedDeviceList()
-
-        Log.e("TAG","  get utils list "+list.size)
 
         binding.btnScan.setOnClickListener {
             doDiscovery()

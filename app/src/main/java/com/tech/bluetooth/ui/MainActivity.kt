@@ -1,18 +1,12 @@
 package com.tech.bluetooth.ui
 
-import android.bluetooth.BluetoothDevice
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import com.tech.bluetooth.R
 import com.tech.bluetooth.adapter.PairedAdapter
 import com.tech.bluetooth.databinding.ActivityMain2Binding
-import com.tech.bluetooth.databinding.ActivityMainBinding
 import com.tech.bluetooth.modal.BleDevice
-import com.tech.bluetooth.utils.BluetoothUtils
 import com.tech.bluetooth.utils.BluetoothUtils_1
 import com.tech.bluetooth.utils.OnItemClickListener
 
@@ -31,13 +25,6 @@ class MainActivity : AppCompatActivity() {
             setHasFixedSize(true)
             adapter = pairedDeviceAdapter
         }
-
-        /*val vtv=findViewById<TextView>(R.id.tv)
-        BluetoothUtils.init(this)
-        var list= BluetoothUtils.getPairedDeviceList() as MutableList<BleDevice>
-        for (device in list){
-            Log.e("TAG","  get utils list "+device.name+"  and "+device.address)
-        }*/
 
 
         ble=BluetoothUtils_1.getInstance(this)
