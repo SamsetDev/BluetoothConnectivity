@@ -7,11 +7,11 @@ import android.view.View
 import com.tech.bluetooth.adapter.PairedAdapter
 import com.tech.bluetooth.databinding.ActivityMain2Binding
 import com.tech.bluetooth.modal.BleDevice
-import com.tech.bluetooth.utils.BluetoothUtils_1
+import com.tech.bluetooth.utils.BluetoothUtils
 import com.tech.bluetooth.utils.OnItemClickListener
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var ble:BluetoothUtils_1
+    private lateinit var ble:BluetoothUtils
     private val pairedDeviceAdapter by lazy {
         PairedAdapter(this)
     }
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        ble=BluetoothUtils_1.getInstance(this)
+        ble=BluetoothUtils.getInstance(this)
         ble.init()
         var lists = ble.getPairedDeviceList() as MutableList<BleDevice>
 
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
 
         // for forget device
-        ble.setResultCallback(object : BluetoothUtils_1.ResultCallback {
+        ble.setResultCallback(object : BluetoothUtils.ResultCallback {
             override fun onResult(result: BleDevice) {
                // remove ble object from list and notifyupdate
                 Log.e("TAG","  call back "+result)

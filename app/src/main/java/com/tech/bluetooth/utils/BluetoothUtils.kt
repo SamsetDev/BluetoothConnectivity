@@ -2,7 +2,6 @@ package com.tech.bluetooth.utils
 
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -20,7 +19,7 @@ import com.tech.bluetooth.utils.CommonUtils.NON_PAIRED
 import java.lang.ref.WeakReference
 
 
-class BluetoothUtils_1 private constructor(context: Activity) {
+class BluetoothUtils private constructor(context: Activity) {
 
     private lateinit var bluetoothManager:BluetoothManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
@@ -32,10 +31,10 @@ class BluetoothUtils_1 private constructor(context: Activity) {
     }
     companion object {
         @Volatile
-        private var instance: BluetoothUtils_1? = null
-        fun getInstance(context: Activity): BluetoothUtils_1 {
+        private var instance: BluetoothUtils? = null
+        fun getInstance(context: Activity): BluetoothUtils {
             return instance ?: synchronized(this) {
-                instance ?: BluetoothUtils_1(context).also { instance = it }
+                instance ?: BluetoothUtils(context).also { instance = it }
             }
         }
 
