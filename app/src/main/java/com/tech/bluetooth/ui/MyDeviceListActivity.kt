@@ -10,7 +10,6 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -20,15 +19,11 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatTextView
 import com.tech.bluetooth.utils.CommonUtils
 import com.tech.bluetooth.utils.CommonUtils.BLUETOOTH_PERMISSION_DESC
 import com.tech.bluetooth.utils.CommonUtils.DEVICE_NAME
@@ -48,6 +43,7 @@ import com.tech.bluetooth.adapter.PairedAdapter
 import com.tech.bluetooth.databinding.ActivityMainBinding
 import com.tech.bluetooth.modal.BleDevice
 import com.tech.bluetooth.utils.BluetoothServices
+import com.tech.bluetooth.utils.BluetoothUtils
 import com.tech.bluetooth.utils.OnItemClickListener
 
 
@@ -107,6 +103,12 @@ class MyDeviceListActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         setResult(Activity.RESULT_CANCELED)
+
+
+        BluetoothUtils.init(this)
+        var list=BluetoothUtils.getPairedDeviceList()
+
+        Log.e("TAG","  get utils list "+list.size)
 
         binding.btnScan.setOnClickListener {
             doDiscovery()
@@ -462,6 +464,7 @@ class MyDeviceListActivity : AppCompatActivity() {
                 Log.e("TAG","Pairing failed: ${e.message}")
             }
      }
+
   }
 
     private val mHandler: Handler = object : Handler(Looper.getMainLooper()) {

@@ -28,6 +28,9 @@ class PairedAdapter(val context: Context) : RecyclerView.Adapter<PairedAdapter.B
         devicesList.remove(data)
         notifyDataSetChanged()
     }
+    public fun refresh() {
+        notifyDataSetChanged()
+    }
 
     public fun setListeners(listeners: OnItemClickListener) {
         onItemClickListeners = listeners
